@@ -9,7 +9,74 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
             
         <script>
+
+        let base_url = $('#base_url').val();
+
+        function excluir(tipo){
+            let id = $('#id').val();
+
+            window.location.replace(base_url + "excluir/" + tipo + "/" + id + "/");
+        }
+
+        function habilitarCampos(){
+            // habilita o campo 
+            $("input").prop("disabled", false);
+            $("select").prop("disabled", false);
+            $("#salvar").prop("disabled", false);
+            $("#habilitar").prop("disabled", true);
+
+            $('#aviso').show();
+
+        }
+        
         $(document).ready(function() {
+
+            $('#modalExcluirProprietario').on('show.bs.modal', function (event) {
+            
+                let button = $(event.relatedTarget)
+                let id = button.data('id')
+                let nome = button.data('nome')
+                let modal = $(this)
+                $('#id').val(id)
+                modal.find('.modal-title').text('Excluir o proprietário ' + nome)
+                modal.find('.modal-body').text('Você tem certeza de que deseja excluir o proprietário ' + nome + '?')
+            })
+
+            $('#modalExcluirLocatario').on('show.bs.modal', function (event) {
+            
+                let button = $(event.relatedTarget)
+                let id = button.data('id')
+                let nome = button.data('nome')
+                let modal = $(this)
+                $('#id').val(id)
+                modal.find('.modal-title').text('Excluir o locatário ' + nome)
+                modal.find('.modal-body').text('Você tem certeza de que deseja excluir o locatário ' + nome + '?')
+            })
+
+            $('#modalExcluirFiador').on('show.bs.modal', function (event) {
+            
+                let button = $(event.relatedTarget)
+                let id = button.data('id')
+                let nome = button.data('nome')
+                let modal = $(this)
+                $('#id').val(id)
+                modal.find('.modal-title').text('Excluir o fiador ' + nome)
+                modal.find('.modal-body').text('Você tem certeza de que deseja excluir o fiador ' + nome + '?')
+            })            
+
+            $('#modalExcluirCorretor').on('show.bs.modal', function (event) {
+            
+            let button = $(event.relatedTarget)
+            let id = button.data('id')
+            let nome = button.data('nome')
+            let modal = $(this)
+            $('#id').val(id)
+            modal.find('.modal-title').text('Excluir o corretor ' + nome)
+            modal.find('.modal-body').text('Você tem certeza de que deseja excluir o corretor ' + nome + '?')
+        })
+
+            
+
             let branch_all = [];
             
             function formatResult(state) {

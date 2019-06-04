@@ -18,11 +18,10 @@ if($imoveis == NULL){
 		</thead>
 		<tbody>
         <?php
-        $cont = 1;
         foreach($imoveis->data as $imovel){
         ?>
             <tr>
-				<th scope="row"><?php echo $cont++;//$imovel->id_pessoa_pes; ?></th>
+				<th scope="row"><?php echo ++$cont;//$imovel->id_pessoa_pes; ?></th>
 				<td><?php echo $imovel->st_tipo_imo; ?></td>
 				<td><?php echo $imovel->st_cep_imo; ?></td>
 				<td>R$ <?php echo number_format($imovel->vl_aluguel_imo, 2, ',', '.'); ?></td>
@@ -54,7 +53,14 @@ if($imoveis == NULL){
                 </td>
                 <!-- <?php echo $imovel->proprietarios_beneficiarios[0]->st_fantasia_pes; ?> -->
 				<td>
-                    
+                    <a href="<?php echo base_url()?>detalhes/imovel/<?php echo $proprietario->id_pessoa_pes?>" class="btn btn-info">Ver detalhes</a>
+                    <button type="button" class="btn btn-danger" data-toggle="modal"
+                    data-target="#modalExcluirImovel"
+                    data-nome="<?php echo $proprietario->st_nome_pes; ?>"
+                    data-id="<?php echo $proprietario->id_pessoa_pes; ?>"
+                    data-whatever="@getbootstrap">
+                        Excluir
+                    </button>
                 </td>
 			</tr>
         <?php
@@ -65,6 +71,7 @@ if($imoveis == NULL){
         }?> -->
 		</tbody>
 	</table>
+    <input id="id" type="hidden" value=""/>
     <nav aria-label="Page navigation example">
         <ul class="pagination">
         <?php 
@@ -80,7 +87,7 @@ if($imoveis == NULL){
         ?>
             <li class="page-item"><a class="page-link" href=""><?php echo $num_pagina; ?></a></li>
         <?php 
-        if($cont%51 == 0){
+        if($cont%50 == 0){
         ?>
             <li class="page-item">
                 <a class="page-link" href="<?php echo base_url()?>consultar/imoveis/<?php echo $num_pagina+1; ?>" aria-label="Next">
@@ -95,4 +102,23 @@ if($imoveis == NULL){
 <?php
 }
 ?>
+</div>
+
+<div class="modal fade" id="modalExcluirImovel" tabindex="-1" role="dialog" aria-labelledby="modalExcluirImovel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalExcluirImovel"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="corpo">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal">Não</button>
+                <button type="button" class="btn btn-danger" onclick="excluirProprietario()">Sim</button>
+            </div>
+        </div>
+    </div>
 </div>

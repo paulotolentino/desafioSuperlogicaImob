@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Cadastros extends CI_Controller {
+class Exclusoes extends CI_Controller {
 
 	public function index(){
 		$this->load->view('frontend/template/header');
@@ -9,88 +9,72 @@ class Cadastros extends CI_Controller {
 		$this->load->view('frontend/template/footer');
     }
     
-    public function proprietario(){
-        $dados['pagina'] = 'cadastrar';
+    public function excluir($tipo, $id){
+        $dados['pagina'] = 'consultar';
 
-        if( $this->input->post('ST_NOME_PES') != NULL &&
-            $this->input->post('ST_FANTASIA_PES') != NULL &&
-            $this->input->post('ST_CNPJ_PES') != NULL &&
-            $this->input->post('ST_CELULAR_PES') != NULL &&
-            $this->input->post('ST_TELEFONE_PES') != NULL &&
-            $this->input->post('ST_EMAIL_PES') != NULL &&
-            $this->input->post('ST_RG_PES') != NULL &&
-            $this->input->post('ST_ORGÃO_PES') != NULL &&
-            $this->input->post('ST_SEXO_PES') != NULL &&
-            $this->input->post('DT_NASCIMENTO_PES') != NULL &&
-            $this->input->post('ST_NACIONALIDADE_PES') != NULL &&
-            $this->input->post('ST_CEP_PES') != NULL &&
-            $this->input->post('ST_ENDERECO_PES') != NULL &&
-            $this->input->post('ST_NUMERO_PES') != NULL &&
-            $this->input->post('ST_COMPLEMENTO_PES') != NULL &&
-            $this->input->post('ST_BAIRRO_PES') != NULL &&
-            $this->input->post('ST_CIDADE_PES') != NULL &&
-            $this->input->post('ST_ESTADO_PES') != NULL &&
-            $this->input->post('ST_OBSERVACAO_PES') != NULL &&
-            $this->input->post('FL_RETERISSQN_PES') != NULL){
-
-            $ch = curl_init();
-
-            curl_setopt($ch, CURLOPT_URL, "http://apps.superlogica.net/imobiliaria/api/proprietarios");
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($ch, CURLOPT_HEADER, FALSE);
-
-            curl_setopt($ch, CURLOPT_POST, TRUE);
-
-            $proprietario = json_encode(array(
-                "ST_NOME_PES"=> $this->input->post('ST_NOME_PES'),
-                "ST_FANTASIA_PES"=> $this->input->post('ST_FANTASIA_PES'),
-                "ST_CNPJ_PES"=> $this->input->post('ST_CNPJ_PES'),
-                "ST_CELULAR_PES"=> $this->input->post('ST_CELULAR_PES'),
-                "ST_TELEFONE_PES"=> $this->input->post('ST_TELEFONE_PES'),
-                "ST_EMAIL_PES"=> $this->input->post('ST_EMAIL_PES'),
-                "ST_RG_PES"=> $this->input->post('ST_RG_PES') ,
-                "ST_ORGÃO_PES"=> $this->input->post('ST_ORGÃO_PES') ,
-                "ST_SEXO_PES"=> $this->input->post('ST_SEXO_PES') ,
-                "DT_NASCIMENTO_PES"=> $this->input->post('DT_NASCIMENTO_PES') ,
-                "ST_NACIONALIDADE_PES"=> $this->input->post('ST_NACIONALIDADE_PES') ,
-                "ST_CEP_PES"=> $this->input->post('ST_CEP_PES') ,
-                "ST_ENDERECO_PES"=> $this->input->post('ST_ENDERECO_PES') ,
-                "ST_NUMERO_PES"=> $this->input->post('ST_NUMERO_PES') ,
-                "ST_COMPLEMENTO_PES"=> $this->input->post('ST_COMPLEMENTO_PES') ,
-                "ST_BAIRRO_PES"=> $this->input->post('ST_BAIRRO_PES') ,
-                "ST_CIDADE_PES"=> $this->input->post('ST_CIDADE_PES') ,
-                "ST_ESTADO_PES"=> $this->input->post('ST_ESTADO_PES') ,
-                "ST_OBSERVACAO_PES" => $this->input->post('ST_OBSERVACAO_PES'),
-                "FL_RETERISSQN_PES" => $this->input->post('FL_RETERISSQN_PES'),
-                "FL_PROPRIETARIOBENEFICIARIO_PES" => 1
-            ));
-
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $proprietario);
-
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                "Content-Type: application/json",
-                "app_token: f9ad4d06-2373-3621-b8c3-e1fed4efea7e",
-                "access_token: a09f3cde-4060-3740-8b3a-5498b1d3fb88"
-            ));
-
-            $response = json_decode(curl_exec($ch));
-            curl_close($ch);
-
-            if($response->status == 200){
-                $dados['mensagem'] = '<div class="p-3 mb-2 bg-success text-white">Sucesso ao cadastrar</div>';
-            }else{
-                $retorno = $response->data[0]->msg;
-                $dados['mensagem'] = '<div class="p-3 mb-2 bg-danger text-white">'.$retorno.'</div>';
-            }
+        switch($tipo){
+            case 1:
+                $url = "http://apps.superlogica.net/imobiliaria/api/proprietarios";
+                $flag = 'FL_PROPRIETARIOBENEFICIARIO_PES';
+                break;
             
+            case 2:
+                $url = "http://apps.superlogica.net/imobiliaria/api/locatarios";
+                $flag = 'FL_LOCATARIO_PES';
+                break;
+
+            case 3:
+                $url = "http://apps.superlogica.net/imobiliaria/api/fiadores";
+                $flag = 'FL_FIADOR_PES';
+                break;
+
+            case 4:
+                $url = "http://apps.superlogica.net/imobiliaria/api/corretores";
+                $flag = 'FL_CORRETOR_PES';
+                break;
+
+            default:
+                $url = "http://apps.superlogica.net/imobiliaria/api/imoveis";
+                $flag = 'FL_STATUS_IMO';
         }
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+
+        $_id = json_encode(array(
+            "ID_PESSOA_PES" => $id,
+            $flag => 0
+        ));
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $_id);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            "Content-Type: application/json",
+            "app_token: f9ad4d06-2373-3621-b8c3-e1fed4efea7e",
+            "access_token: a09f3cde-4060-3740-8b3a-5498b1d3fb88"
+        ));
+
+        $response = json_decode(curl_exec($ch));
+        curl_close($ch);
+
+        if($response->status == 200){
+            $dados['mensagem'] = '<div class="p-3 mb-2 bg-success text-white">Sucesso ao excluir</div>';
+        }else{
+            $retorno = $response->data[0]->msg;
+            $dados['mensagem'] = '<div class="p-3 mb-2 bg-danger text-white">'.$retorno.'</div>';
+        }
+
         $this->load->view('frontend/template/header', $dados);
-        $this->load->view('frontend/cadastros/proprietario');
-        $this->load->view('frontend/template/footer');        
+        $this->load->view('frontend/home');
+        $this->load->view('frontend/template/footer');
     }
 
     public function locatario(){
-        $dados['pagina'] = 'cadastrar';
+        $dados['pagina'] = 'consultar';
 
         if( $this->input->post('ST_NOME_PES') != NULL &&
             $this->input->post('ST_FANTASIA_PES') != NULL &&
@@ -99,7 +83,7 @@ class Cadastros extends CI_Controller {
             $this->input->post('ST_TELEFONE_PES') != NULL &&
             $this->input->post('ST_EMAIL_PES') != NULL &&
             $this->input->post('ST_RG_PES') != NULL &&
-            $this->input->post('ST_ORGÃO_PES') != NULL &&
+            $this->input->post('ST_ORGAO_PES') != NULL &&
             $this->input->post('ST_SEXO_PES') != NULL &&
             $this->input->post('DT_NASCIMENTO_PES') != NULL &&
             $this->input->post('ST_NACIONALIDADE_PES') != NULL &&
@@ -120,27 +104,28 @@ class Cadastros extends CI_Controller {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             curl_setopt($ch, CURLOPT_HEADER, FALSE);
 
-            curl_setopt($ch, CURLOPT_POST, TRUE);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
 
             $locatario = json_encode(array(
+                "ID_PESSOA_PES"=> $this->input->post('ID_PESSOA_PES'),
                 "ST_NOME_PES"=> $this->input->post('ST_NOME_PES'),
                 "ST_FANTASIA_PES"=> $this->input->post('ST_FANTASIA_PES'),
                 "ST_CNPJ_PES"=> $this->input->post('ST_CNPJ_PES'),
                 "ST_CELULAR_PES"=> $this->input->post('ST_CELULAR_PES'),
                 "ST_TELEFONE_PES"=> $this->input->post('ST_TELEFONE_PES'),
                 "ST_EMAIL_PES"=> $this->input->post('ST_EMAIL_PES'),
-                "ST_RG_PES"=> $this->input->post('ST_RG_PES') ,
-                "ST_ORGÃO_PES"=> $this->input->post('ST_ORGÃO_PES') ,
-                "ST_SEXO_PES"=> $this->input->post('ST_SEXO_PES') ,
-                "DT_NASCIMENTO_PES"=> $this->input->post('DT_NASCIMENTO_PES') ,
-                "ST_NACIONALIDADE_PES"=> $this->input->post('ST_NACIONALIDADE_PES') ,
-                "ST_CEP_PES"=> $this->input->post('ST_CEP_PES') ,
-                "ST_ENDERECO_PES"=> $this->input->post('ST_ENDERECO_PES') ,
-                "ST_NUMERO_PES"=> $this->input->post('ST_NUMERO_PES') ,
-                "ST_COMPLEMENTO_PES"=> $this->input->post('ST_COMPLEMENTO_PES') ,
-                "ST_BAIRRO_PES"=> $this->input->post('ST_BAIRRO_PES') ,
-                "ST_CIDADE_PES"=> $this->input->post('ST_CIDADE_PES') ,
-                "ST_ESTADO_PES"=> $this->input->post('ST_ESTADO_PES') ,
+                "ST_RG_PES"=> $this->input->post('ST_RG_PES'),
+                "ST_ORGAO_PES"=> $this->input->post('ST_ORGAO_PES'),
+                "ST_SEXO_PES"=> $this->input->post('ST_SEXO_PES'),
+                "DT_NASCIMENTO_PES"=> $this->input->post('DT_NASCIMENTO_PES'),
+                "ST_NACIONALIDADE_PES"=> $this->input->post('ST_NACIONALIDADE_PES'),
+                "ST_CEP_PES"=> $this->input->post('ST_CEP_PES'),
+                "ST_ENDERECO_PES"=> $this->input->post('ST_ENDERECO_PES'),
+                "ST_NUMERO_PES"=> $this->input->post('ST_NUMERO_PES'),
+                "ST_COMPLEMENTO_PES"=> $this->input->post('ST_COMPLEMENTO_PES'),
+                "ST_BAIRRO_PES"=> $this->input->post('ST_BAIRRO_PES'),
+                "ST_CIDADE_PES"=> $this->input->post('ST_CIDADE_PES'),
+                "ST_ESTADO_PES"=> $this->input->post('ST_ESTADO_PES'),
                 "ST_OBSERVACAO_PES" => $this->input->post('ST_OBSERVACAO_PES'),
                 "ID_FORMA_PAG" => $this->input->post('ID_FORMA_PAG'),
                 "FL_NAODOMICILIADO_PES" => $this->input->post('FL_NAODOMICILIADO_PES'),
@@ -159,7 +144,7 @@ class Cadastros extends CI_Controller {
             curl_close($ch);
 
             if($response->status == 200){
-                $dados['mensagem'] = '<div class="p-3 mb-2 bg-success text-white">Sucesso ao cadastrar</div>';
+                $dados['mensagem'] = '<div class="p-3 mb-2 bg-success text-white">Sucesso ao editar</div>';
             }else{
                 $retorno = $response->data[0]->msg;
                 $dados['mensagem'] = '<div class="p-3 mb-2 bg-danger text-white">'.$retorno.'</div>';
@@ -167,12 +152,12 @@ class Cadastros extends CI_Controller {
             
         }
         $this->load->view('frontend/template/header', $dados);
-        $this->load->view('frontend/cadastros/locatario');
+        $this->load->view('frontend/consultas/locatario');
         $this->load->view('frontend/template/footer');        
     }
 
     public function fiador(){
-        $dados['pagina'] = 'cadastrar';
+        $dados['pagina'] = 'consultar';
 
         if( $this->input->post('ST_NOME_PES') != NULL &&
             $this->input->post('ST_FANTASIA_PES') != NULL &&
@@ -181,7 +166,7 @@ class Cadastros extends CI_Controller {
             $this->input->post('ST_TELEFONE_PES') != NULL &&
             $this->input->post('ST_EMAIL_PES') != NULL &&
             $this->input->post('ST_RG_PES') != NULL &&
-            $this->input->post('ST_ORGÃO_PES') != NULL &&
+            $this->input->post('ST_ORGAO_PES') != NULL &&
             $this->input->post('ST_SEXO_PES') != NULL &&
             $this->input->post('DT_NASCIMENTO_PES') != NULL &&
             $this->input->post('ST_NACIONALIDADE_PES') != NULL &&
@@ -200,7 +185,7 @@ class Cadastros extends CI_Controller {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             curl_setopt($ch, CURLOPT_HEADER, FALSE);
 
-            curl_setopt($ch, CURLOPT_POST, TRUE);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
 
             $fiador = json_encode(array(
                 "ST_NOME_PES"=> $this->input->post('ST_NOME_PES'),
@@ -210,7 +195,7 @@ class Cadastros extends CI_Controller {
                 "ST_TELEFONE_PES"=> $this->input->post('ST_TELEFONE_PES'),
                 "ST_EMAIL_PES"=> $this->input->post('ST_EMAIL_PES'),
                 "ST_RG_PES"=> $this->input->post('ST_RG_PES') ,
-                "ST_ORGÃO_PES"=> $this->input->post('ST_ORGÃO_PES') ,
+                "ST_ORGAO_PES"=> $this->input->post('ST_ORGAO_PES') ,
                 "ST_SEXO_PES"=> $this->input->post('ST_SEXO_PES') ,
                 "DT_NASCIMENTO_PES"=> $this->input->post('DT_NASCIMENTO_PES') ,
                 "ST_NACIONALIDADE_PES"=> $this->input->post('ST_NACIONALIDADE_PES') ,
@@ -237,7 +222,7 @@ class Cadastros extends CI_Controller {
             curl_close($ch);
 
             if($response->status == 200){
-                $dados['mensagem'] = '<div class="p-3 mb-2 bg-success text-white">Sucesso ao cadastrar</div>';
+                $dados['mensagem'] = '<div class="p-3 mb-2 bg-success text-white">Sucesso ao editar</div>';
             }else{
                 $retorno = $response->data[0]->msg;
                 $dados['mensagem'] = '<div class="p-3 mb-2 bg-danger text-white">'.$retorno.'</div>';
@@ -245,12 +230,12 @@ class Cadastros extends CI_Controller {
             
         }
         $this->load->view('frontend/template/header', $dados);
-        $this->load->view('frontend/cadastros/fiador');
+        $this->load->view('frontend/consultas/fiador');
         $this->load->view('frontend/template/footer');        
     }
 
     public function corretor(){
-        $dados['pagina'] = 'cadastrar';
+        $dados['pagina'] = 'consultar';
 
         if( $this->input->post('ST_NOME_PES') != NULL &&
             $this->input->post('ST_FANTASIA_PES') != NULL &&
@@ -259,7 +244,7 @@ class Cadastros extends CI_Controller {
             $this->input->post('ST_TELEFONE_PES') != NULL &&
             $this->input->post('ST_EMAIL_PES') != NULL &&
             $this->input->post('ST_RG_PES') != NULL &&
-            $this->input->post('ST_ORGÃO_PES') != NULL &&
+            $this->input->post('ST_ORGAO_PES') != NULL &&
             $this->input->post('ST_SEXO_PES') != NULL &&
             $this->input->post('DT_NASCIMENTO_PES') != NULL &&
             $this->input->post('ST_NACIONALIDADE_PES') != NULL &&
@@ -278,7 +263,7 @@ class Cadastros extends CI_Controller {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             curl_setopt($ch, CURLOPT_HEADER, FALSE);
 
-            curl_setopt($ch, CURLOPT_POST, TRUE);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
 
             $corretor = json_encode(array(
                 "ST_NOME_PES"=> $this->input->post('ST_NOME_PES'),
@@ -288,7 +273,7 @@ class Cadastros extends CI_Controller {
                 "ST_TELEFONE_PES"=> $this->input->post('ST_TELEFONE_PES'),
                 "ST_EMAIL_PES"=> $this->input->post('ST_EMAIL_PES'),
                 "ST_RG_PES"=> $this->input->post('ST_RG_PES') ,
-                "ST_ORGÃO_PES"=> $this->input->post('ST_ORGÃO_PES') ,
+                "ST_ORGAO_PES"=> $this->input->post('ST_ORGAO_PES') ,
                 "ST_SEXO_PES"=> $this->input->post('ST_SEXO_PES') ,
                 "DT_NASCIMENTO_PES"=> $this->input->post('DT_NASCIMENTO_PES') ,
                 "ST_NACIONALIDADE_PES"=> $this->input->post('ST_NACIONALIDADE_PES') ,
@@ -315,7 +300,7 @@ class Cadastros extends CI_Controller {
             curl_close($ch);
 
             if($response->status == 200){
-                $dados['mensagem'] = '<div class="p-3 mb-2 bg-success text-white">Sucesso ao cadastrar</div>';
+                $dados['mensagem'] = '<div class="p-3 mb-2 bg-success text-white">Sucesso ao editar</div>';
             }else{
                 $retorno = $response->data[0]->msg;
                 $dados['mensagem'] = '<div class="p-3 mb-2 bg-danger text-white">'.$retorno.'</div>';
@@ -323,12 +308,12 @@ class Cadastros extends CI_Controller {
             
         }
         $this->load->view('frontend/template/header', $dados);
-        $this->load->view('frontend/cadastros/corretor');
+        $this->load->view('frontend/consultas/fiador');
         $this->load->view('frontend/template/footer');        
     }
 
     public function imovel(){
-        $dados['pagina'] = 'cadastrar';
+        $dados['pagina'] = 'consultar';
 
         if( $this->input->post('ST_TIPO_IMO') != NULL &&
             $this->input->post('ST_CEP_IMO') != NULL &&
@@ -353,8 +338,7 @@ class Cadastros extends CI_Controller {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             curl_setopt($ch, CURLOPT_HEADER, FALSE);
 
-            curl_setopt($ch, CURLOPT_POST, TRUE);
-            
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
 
             $imovel = json_encode(array(
                 "ST_TIPO_IMO"=> $this->input->post('ST_TIPO_IMO'),
@@ -385,18 +369,16 @@ class Cadastros extends CI_Controller {
             curl_close($ch);
 
             if($response->status == 200){
-                $dados['mensagem'] = '<div class="p-3 mb-2 bg-success text-white">Sucesso ao cadastrar</div>';
+                $dados['mensagem'] = '<div class="p-3 mb-2 bg-success text-white">Sucesso ao editar</div>';
             }else{
                 $retorno = $response->data[0]->msg;
                 $dados['mensagem'] = '<div class="p-3 mb-2 bg-danger text-white">'.$retorno.'</div>';
             }
             
         }
-
-        $dados['proprietarios'] = buscarDadosAPI(1);
-
         $this->load->view('frontend/template/header', $dados);
-        $this->load->view('frontend/cadastros/imovel');
+        $this->load->view('frontend/consultas/fiador');
         $this->load->view('frontend/template/footer');        
-    }    
+    }
+    
 }

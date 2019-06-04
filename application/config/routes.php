@@ -27,3 +27,13 @@ $route['cadastrar/locatario'] = 'cadastros/locatario';
 $route['cadastrar/fiador'] = 'cadastros/fiador';
 $route['cadastrar/corretor'] = 'cadastros/corretor';
 $route['cadastrar/imovel'] = 'cadastros/imovel';
+
+// editar
+$route['editar/proprietario/(:num)'] = 'edicoes/proprietario/$1';
+$route['editar/locatario/(:num)'] = 'edicoes/locatario/$1';
+$route['editar/fiador/(:num)'] = 'edicoes/fiador/$1';
+$route['editar/corretor/(:num)'] = 'edicoes/corretor/$1';
+$route['editar/imovel/(:num)'] = 'edicoes/imovel/$1';
+
+// excluir
+$route['excluir/(:num)/(:num)'] = 'exclusoes/excluir/$1/$2';

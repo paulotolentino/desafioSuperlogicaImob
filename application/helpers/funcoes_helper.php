@@ -22,7 +22,7 @@
 		return false;
     }
     
-    function buscarDadosAPI($tipo, $pagina = false){
+    function buscarDadosAPI($tipo, $pagina = false, $id = false){
 
         switch($tipo){
             case 1:
@@ -48,11 +48,21 @@
         if($pagina != false){
             $url .= '?pagina='.$pagina;
         }
+
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
+
+        if($id != false){
+            $_id = array(
+                "id" => $id
+            );
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($_id));
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+            
+        }
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             "Content-Type: application/json",
